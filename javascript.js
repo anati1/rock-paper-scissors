@@ -3,40 +3,139 @@ const choice = ["rock", "paper", "scissors"];
 let choiceIndex = 0;
 let playerSelection = "rock"; //default value
 let computerSelection = "paper"; //default value
-let userChoice; //prompt input
 let currentRound = 0;
 let computerScore = 0;
 let PlayerScore = 0;
 let statusText = "";
+let playerPaperIcon;
+
+function addToDom(status, PlayerScore, computerScore, round){
+   result = document.querySelector('#result'); 
+   let currentStatus = document.createElement('div');
+   let currentScore = document.createElement('div');
+   currentScore.textContent = `Score player-${PlayerScore} computer-${computerScore}. round ${round} \\ 5`; 
+   currentStatus.textContent = `${status}`;
+   currentScore.classList.add("score");
+   currentStatus.classList.add("status");
+   result.append(currentStatus);
+   result.append(currentScore);
+}
+
+function togglecomputerSelection(computerSelection){
+    let compIcon;
+    if (computerSelection === 'paper'){
+        compIcon = document.querySelector('#paper-comp');
+        compIcon.classList.toggle("not-active");
+    } else if (computerSelection === 'scissors'){
+        compIcon = document.querySelector('#scissors-comp');
+        compIcon.classList.toggle("not-active");
+    } else {
+        compIcon = document.querySelector('#rock-comp');
+        compIcon.classList.toggle("not-active");
+    }
+    setTimeout(hideComputerSelection, 3000);
+    setTimeout(removeBorder, 3000);
+}
+
+function addBorder(element){
+    element.classList.add("active");
+}
+
+function removeBorder(){
+    element = document.querySelector('.active');
+    element.classList.remove("active");
+}
+
+function hideComputerSelection(){
+    compIcon = document.querySelector('#paper-comp');
+    compIcon.classList.add("not-active");
+    compIcon = document.querySelector('#scissors-comp');
+    compIcon.classList.add("not-active");
+    compIcon = document.querySelector('#rock-comp');
+    compIcon.classList.add("not-active");
+}
+
+function endGame(){
+    result = document.querySelector('#result'); 
+    let currentStatus = document.createElement('p');
+    if (computerScore > PlayerScore){
+        currentStatus.textContent = 'Computer Wins! Game End!';
+    } else if (computerScore < PlayerScore) {
+        currentStatus.textContent = 'You Win! Game End!' ;
+    }
+    else {
+        currentStatus.textContent = 'It\'s a tie. Game End!';
+    }
+    result.append(currentStatus);
+}
+
+playerIcon = document.querySelector('#paper');
+
+playerIcon.addEventListener('click', (e) => {
+    currentRound++;
+    if (currentRound < 6) {
+        playerSelection = "paper";
+        addBorder(e.target);
+        computerSelection = getComputerChoice();
+        togglecomputerSelection(computerSelection);
+        statusText = playRound(playerSelection, computerSelection);
+        addToDom(statusText, PlayerScore, computerScore, currentRound);
+        if (currentRound === 5){
+            endGame()
+        }
+    }
+    return;
+});
+
+playerIcon = document.querySelector('#scissors');
+
+playerIcon.addEventListener('click', (e) => {
+    currentRound++;
+    if (currentRound < 6) {
+        playerSelection = "scissors";
+        addBorder(e.target);
+        computerSelection = getComputerChoice();
+        togglecomputerSelection(computerSelection);
+        statusText = playRound(playerSelection, computerSelection);
+        addToDom(statusText, PlayerScore, computerScore, currentRound);
+        if (currentRound === 5){
+            endGame()
+        }
+    }
+    return;
+});
+
+playerIcon = document.querySelector('#rock');
+
+playerIcon.addEventListener('click', (e) => {
+    currentRound++;
+    if (currentRound < 6) {
+        playerSelection = "rock";
+        addBorder(e.target);
+        computerSelection = getComputerChoice();
+        togglecomputerSelection(computerSelection);
+        statusText = playRound(playerSelection, computerSelection);
+        addToDom(statusText, PlayerScore, computerScore, currentRound);
+        if (currentRound === 5){
+            endGame()
+        }
+    }
+    return;
+})
+
+/******************************************************/
 
 function getComputerChoice() {
     //get random number 0-2
     choiceIndex = Math.floor(Math.random() * 3);
-    playerSelection = choice[choiceIndex];
-    return playerSelection;
-}
-
-function getPlyerChoice() {
-    invalid = true;
-    do {
-        userChoice = (prompt("Please choose rock, paper,  scissors", "paper")).toLowerCase();
-        if (userChoice === "rock" || userChoice === "paper" || userChoice === "scissors"){
-            invalid = false;
-            return userChoice;
-        } else if (userChoice === null){
-            invalid = false;
-            return;
-        } else {
-            userChoice = prompt("Ivalid choice. Please choose rock, paper,  scissors", "paper");
-        }
-    } while (invalid)
+    return choice[choiceIndex];
 }
 
 function playRound(playerSelection, computerSelection) {
     if (checkTie(playerSelection, computerSelection)){
         computerScore++;
         PlayerScore++;
-        return "It's a tie";
+        return `It's a tie ${playerSelection} vs ${computerSelection}`;
     } else if (playerSelection === "rock" && computerSelection === "paper"){
         computerScore++;
         return "You Lose! Paper beats Rock";
@@ -63,35 +162,3 @@ function checkTie(playerSelection, computerSelection){
         return true;
     return false
 }
-
-function printScore(){
-    return `Round ${currentRound} \\ 5. 
-    Player score ${PlayerScore} 
-    computer score ${computerScore}`
-}
-
-function resetGame() {
-    currentRound = 0;
-    computerScore = 0;
-    PlayerScore = 0;
-}
-
-function Game(){
-    for(let i = 0; i < 5; i++){
-        currentRound++;
-        computerSelection = getComputerChoice();
-        playerSelection = getPlyerChoice();
-        console.log("****");
-        console.log(`Computer selection: ${computerSelection}`);
-        console.log(`Player selection: ${playerSelection}`);
-        console.log("****");
-        statusText = playRound(playerSelection, computerSelection);
-        console.log(statusText);
-        console.log(printScore());
-
-    }
-    console.log("End Game!");
-    resetGame();
-}
-
-Game();
